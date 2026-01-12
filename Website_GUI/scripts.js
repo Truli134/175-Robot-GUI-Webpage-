@@ -1,4 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Theme toggle: apply saved theme or system preference
+  const themeToggle = document.getElementById('themeToggle');
+  const applyTheme = (theme) => {
+    if (theme === 'dark') {
+      document.body.classList.add('dark');
+      themeToggle.textContent = '☀️';
+      themeToggle.setAttribute('aria-pressed', 'true');
+    } else {
+      document.body.classList.remove('dark');
+      themeToggle.textContent = '🌙';
+      themeToggle.setAttribute('aria-pressed', 'false');
+    }
+  };
+
+  const saved = localStorage.getItem('theme');
+  if (saved) applyTheme(saved);
+  else {
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(prefersDark ? 'dark' : 'light');
+  }
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark');
+    const theme = isDark ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
+    applyTheme(theme);
+  });
+
   // Gas chart (placeholder) using Chart.js
   const gasCanvas = document.getElementById('gasChart');
   const ctx = gasCanvas.getContext('2d');
