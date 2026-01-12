@@ -54,4 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
       status.textContent = 'Camera denied or unavailable';
     }
   });
+
+  // Movement button handlers (placeholder)
+  document.addEventListener('click', (ev) => {
+    const btn = ev.target.closest && ev.target.closest('.movement-btn');
+    if (!btn) return;
+    const cmd = btn.dataset.cmd;
+    // visual feedback: briefly add active state
+    btn.classList.add('pressed');
+    setTimeout(() => btn.classList.remove('pressed'), 180);
+    console.log('Movement command:', cmd);
+    // TODO: send command to robot (e.g., via WebSocket / REST)
+  });
 });

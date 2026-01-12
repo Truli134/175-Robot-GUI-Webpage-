@@ -30,10 +30,23 @@
         <canvas id="gasChart" width="400" height="200"></canvas>
       </aside>
 
-      <section class="panel sensors" aria-label="Sensors">
-        <strong>Sensor Data</strong>
-        <div class="sublines">Other sensor information</div>
-        <div class="hint">(Adjust amount of blocks depending on sensors)</div>
+      <section class="panel sensors" aria-label="Movements">
+        <strong>Movements</strong>
+        <div class="movements">
+          <button class="movement-btn" data-cmd="forward" aria-label="Forward">▲<span>Forward</span></button>
+          <div class="row">
+            <button class="movement-btn" data-cmd="left" aria-label="Left">◀<span>Left</span></button>
+            <button class="movement-btn" data-cmd="stop" aria-label="Stop">■<span>Stop</span></button>
+            <button class="movement-btn" data-cmd="right" aria-label="Right">▶<span>Right</span></button>
+          </div>
+          <button class="movement-btn" data-cmd="backward" aria-label="Backward">▼<span>Backward</span></button>
+
+          <div class="extras">
+            <button class="movement-btn small" data-cmd="turn-left" aria-label="Turn left">↺<span>Turn</span></button>
+            <button class="movement-btn small" data-cmd="turn-right" aria-label="Turn right">↻<span>Turn</span></button>
+          </div>
+          <div class="hint">Hover any command to preview (visual only). Real actions can be wired later.</div>
+        </div>
       </section>
 
       <section class="panel footer" aria-label="Additional info">
