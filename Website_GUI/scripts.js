@@ -147,7 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Keyboard shortcuts: W/A/S/D -> forward/left/backward/right, Q/E -> turn-left/turn-right
-  const keyMap = { w: 'forward', a: 'left', s: 'backward', d: 'right', q: 'turn-left', e: 'turn-right', x: 'stop' };
+  const keyMap = {
+    w: 'forward', a: 'left', s: 'backward', d: 'right',
+    q: 'turn-left', e: 'turn-right', x: 'stop',
+    arrowup: 'forward', arrowleft: 'left', arrowdown: 'backward', arrowright: 'right'
+  };
   const activeKeys = new Set();
 
   document.addEventListener('keydown', (e) => {
@@ -157,6 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const k = (e.key || '').toLowerCase();
     const cmd = keyMap[k];
     if (!cmd) return;
+    // prevent page scrolling when using arrow keys for movement
+    e.preventDefault && e.preventDefault();
     if (activeKeys.has(k)) return; // ignore repeats while held
     activeKeys.add(k);
     const btn = document.querySelector(`.movement-btn[data-cmd="${cmd}"]`);
