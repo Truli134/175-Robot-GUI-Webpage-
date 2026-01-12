@@ -83,6 +83,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Fullscreen toggle for camera
+  const fsBtn = document.getElementById('btnFullscreen');
+  const cameraWrap = document.querySelector('.camera-wrap');
+
+  const exitFsBtn = document.getElementById('btnExitFullscreen');
+
+  const getFullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement;
+
+  const updateFsButton = () => {
+    const isFs = getFullscreenElement() === cameraWrap;
+    if (!fsBtn) return;
+    fsBtn.setAttribute('aria-pressed', isFs ? 'true' : 'false');
+    fsBtn.textContent = isFs ? '⤢' : '⛶';
+    if (exitFsBtn) exitFsBtn.style.display = isFs ? 'inline-flex' : 'none';
+  };
+
+  if (fsBtn && cameraWrap) {
+    fsBtn.addEventListener('click', async () => {
+      try {
+        if (getFullscreenElement() === cameraWrap) {
+          if (document.exitFullscreen) await document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        } else {
+          if (cameraWrap.requestFullscreen) await cameraWrap.requestFullscreen();
+          else if (cameraWrap.webkitRequestFullscreen) cameraWrap.webkitRequestFullscreen();
+        }
+      } catch (err) {
+        console.warn('Fullscreen error', err);
+      }
+    });
+
+    document.addEventListener('fullscreenchange', updateFsButton);
+    document.addEventListener('webkitfullscreenchange', updateFsButton);
+    updateFsButton();
+  }
+
+  if (exitFsBtn) {
+    exitFsBtn.addEventListener('click', async () => {
+      try {
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } catch (err) {
+        console.warn('Exit fullscreen error', err);
+      }
+    });
+  }
+
   // Movement button handlers (placeholder)
   document.addEventListener('click', (ev) => {
     const btn = ev.target.closest && ev.target.closest('.movement-btn');

@@ -98,6 +98,68 @@ body.dark{
 #btnCamera{ background:var(--accent); color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
 #btnCamera:active{ transform:translateY(1px); }
 
+/* Fullscreen button in camera controls */
+#btnFullscreen{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:15px;
+}
+#btnFullscreen:active{ transform:translateY(1px); }
+
+/* Fullscreen presentation rules */
+.camera-wrap:fullscreen, .camera-wrap:-webkit-full-screen {
+  width:100vw;
+  height:100vh;
+  background:#000;
+}
+.camera-wrap:fullscreen video, .camera-wrap:-webkit-full-screen video {
+  width:100%;
+  height:100%;
+  max-height:none;
+  border-radius:0;
+  object-fit:contain;
+}
+
+/* Exit fullscreen button (hidden until in fullscreen) */
+#btnExitFullscreen{
+  display:none;
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:15px;
+}
+
+/* When camera-wrap is fullscreen, position controls top-right and reveal exit button */
+.camera-wrap:fullscreen, .camera-wrap:-webkit-full-screen{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.camera-wrap:fullscreen .camera-controls, .camera-wrap:-webkit-full-screen .camera-controls{
+  position:absolute;
+  top:12px;
+  right:12px;
+  gap:8px;
+  background: rgba(0,0,0,0.18);
+  padding:6px;
+  border-radius:8px;
+}
+.camera-wrap:fullscreen .camera-controls button, .camera-wrap:-webkit-full-screen .camera-controls button{
+  color:#fff;
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.28);
+}
+.camera-wrap:fullscreen #btnExitFullscreen, .camera-wrap:-webkit-full-screen #btnExitFullscreen{
+  display:inline-flex !important;
+}
+
 .gas canvas{ width:100%; height:160px; max-width:420px; }
 
 /* All Graphs button inside gas panel */
