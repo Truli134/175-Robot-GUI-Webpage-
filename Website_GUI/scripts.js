@@ -131,14 +131,40 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Movement button handlers (placeholder)
+  function handleMovement(cmd, btn){
+    if(btn){
+      btn.classList.add('pressed');
+      setTimeout(() => btn.classList.remove('pressed'), 180);
+    }
+    console.log('Movement command:', cmd);
+    // TODO: send command to robot (e.g., via WebSocket / REST)
+  }
+
   document.addEventListener('click', (ev) => {
     const btn = ev.target.closest && ev.target.closest('.movement-btn');
     if (!btn) return;
-    const cmd = btn.dataset.cmd;
-    // visual feedback: briefly add active state
-    btn.classList.add('pressed');
-    setTimeout(() => btn.classList.remove('pressed'), 180);
-    console.log('Movement command:', cmd);
-    // TODO: send command to robot (e.g., via WebSocket / REST)
+    handleMovement(btn.dataset.cmd, btn);
+  });
+
+  // Keyboard shortcuts: W/A/S/D -> forward/left/backward/right, Q/E -> turn-left/turn-right
+  const keyMap = { w: 'forward', a: 'left', s: 'backward', d: 'right', q: 'turn-left', e: 'turn-right', x: 'stop' };
+  const activeKeys = new Set();
+
+  document.addEventListener('keydown', (e) => {
+    const target = e.target;
+    const tag = target && target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable) return;
+    const k = (e.key || '').toLowerCase();
+    const cmd = keyMap[k];
+    if (!cmd) return;
+    if (activeKeys.has(k)) return; // ignore repeats while held
+    activeKeys.add(k);
+    const btn = document.querySelector(`.movement-btn[data-cmd="${cmd}"]`);
+    handleMovement(cmd, btn);
+  });
+
+  document.addEventListener('keyup', (e) => {
+    const k = (e.key || '').toLowerCase();
+    if (activeKeys.has(k)) activeKeys.delete(k);
   });
 });
