@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hexapod Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <h1>Hexapod Dashboard</h1>
+      <p class="subtitle">Wireframe — live camera, gas graph, sensors, and status</p>
+    </header>
+
+    <main class="grid">
+      <section class="panel camera" aria-label="Live camera feed">
+        <div class="camera-wrap">
+          <video id="camera" autoplay playsinline muted></video>
+          <div class="camera-controls">
+            <button id="btnCamera">Connect Camera</button>
+            <span id="camStatus" class="muted">Not connected</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel gas" aria-label="Gas graph">
+        <h3>Gas Levels</h3>
+        <canvas id="gasChart" width="400" height="200"></canvas>
+      </aside>
+
+      <section class="panel sensors" aria-label="Sensors">
+        <strong>Sensor Data</strong>
+        <div class="sublines">Other sensor information</div>
+        <div class="hint">(Adjust amount of blocks depending on sensors)</div>
+      </section>
+
+      <section class="panel footer" aria-label="Additional info">
+        <div>Battery: <span class="muted">--%</span></div>
+        <div>Controls: <span class="muted">Basic</span></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="scripts.js" defer></script>
+</body>
+</html>
