@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Additional Graphs — Hexapod</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .graphs-wrap{ width:min(1200px,94vw); margin:28px auto; }
+    .graphs-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
+    .large{ grid-column: 1 / span 2; min-height:280px; }
+    .small{ min-height:160px; }
+    .graphs-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .back-link{ text-decoration:none; color:var(--accent); font-weight:600; }
+  </style>
+</head>
+<body>
+  <div class="graphs-wrap">
+    <div class="graphs-header">
+      <div>
+        <h2 style="margin:0;">Additional Live Graphs</h2>
+        <div style="color:var(--muted); font-size:13px;">Live telemetry and historical data</div>
+      </div>
+      <div>
+        <a class="back-link" href="index.html">← Back to Dashboard</a>
+      </div>
+    </div>
+
+    <div class="graphs-grid tables-grid">
+      <div class="panel small">
+        <h4>Graph 1</h4>
+        <table id="table1" class="compact-table" aria-label="Graph 1 live table"></table>
+      </div>
+      <div class="panel small">
+        <h4>Graph 2</h4>
+        <table id="table2" class="compact-table" aria-label="Graph 2 live table"></table>
+      </div>
+
+      <div class="panel small">
+        <h4>Graph 3</h4>
+        <table id="table3" class="compact-table" aria-label="Graph 3 live table"></table>
+      </div>
+      <div class="panel small">
+        <h4>Graph 4</h4>
+        <table id="table4" class="compact-table" aria-label="Graph 4 live table"></table>
+      </div>
+
+      <div class="panel small">
+        <h4>Graph 5</h4>
+        <table id="table5" class="compact-table" aria-label="Graph 5 live table"></table>
+      </div>
+      <div class="panel small">
+        <h4>Graph 6</h4>
+        <table id="table6" class="compact-table" aria-label="Graph 6 live table"></table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Populate compact live tables and update them periodically
+    function createTableData(id){
+      const tbl = document.getElementById(id);
+      if (!tbl) return null;
+      // header
+      tbl.innerHTML = '';
+      const thead = document.createElement('thead');
+      const htr = document.createElement('tr');
+      ['Time','Value'].forEach(t => { const th = document.createElement('th'); th.textContent = t; htr.appendChild(th); });
+      thead.appendChild(htr); tbl.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      // initial 6 rows
+      const now = Date.now();
+      for(let i=0;i<6;i++){
+        const tr = document.createElement('tr');
+        const time = new Date(now - (5-i)*1000).toLocaleTimeString();
+        const td1 = document.createElement('td'); td1.textContent = time; tr.appendChild(td1);
+        const td2 = document.createElement('td'); td2.textContent = (Math.random()*100).toFixed(1); tr.appendChild(td2);
+        tbody.appendChild(tr);
+      }
+      tbl.appendChild(tbody);
+      return { table: tbl, tbody };
+    }
+
+    const tables = [];
+    for(let i=1;i<=6;i++) tables.push( createTableData('table'+i) );
+
+    // update each table every 1.5s with new value, keeping 6 rows
+    setInterval(()=>{
+      const t = new Date().toLocaleTimeString();
+      tables.forEach((obj, idx)=>{
+        if(!obj) return;
+        const tr = document.createElement('tr');
+        const td1 = document.createElement('td'); td1.textContent = t; tr.appendChild(td1);
+        const td2 = document.createElement('td'); td2.textContent = (Math.random()*100).toFixed(1); tr.appendChild(td2);
+        obj.tbody.appendChild(tr);
+        // keep to 6 rows
+        while(obj.tbody.rows.length>6) obj.tbody.removeChild(obj.tbody.firstChild);
+      });
+    },1500);
+  </script>
+</body>
+</html>
