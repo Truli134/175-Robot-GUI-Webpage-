@@ -149,16 +149,156 @@ document.addEventListener('DOMContentLoaded', () => {
   // Keyboard shortcuts: W/A/S/D -> forward/left/backward/right, Q/E -> turn-left/turn-right
   const keyMap = {
     w: 'forward', a: 'left', s: 'backward', d: 'right',
-    q: 'turn-left', e: 'turn-right', x: 'stop',
+    q: 'turn-left', e: 'turn-right',
     arrowup: 'forward', arrowleft: 'left', arrowdown: 'backward', arrowright: 'right'
   };
   const activeKeys = new Set();
+  let isInTwistMode = false;
+
+  // Mode switching
+  const switchModeBtn = document.getElementById('switchModeBtn');
+  const switchModeBackBtn = document.getElementById('switchModeBackBtn');
+  const movementControls = document.getElementById('movementControls');
+  const twistBodyControl = document.getElementById('twistBodyControl');
+
+  const switchMode = (toTwist) => {
+    isInTwistMode = toTwist;
+    const sectionTitle = document.querySelector('.sensors strong');
+    const controlsDisplay = document.getElementById('controlsDisplay');
+    if (toTwist) {
+      movementControls.style.display = 'none';
+      twistBodyControl.style.display = 'flex';
+      if (sectionTitle) sectionTitle.textContent = 'Twist Body';
+      if (controlsDisplay) controlsDisplay.textContent = 'Twist Body';
+    } else {
+      movementControls.style.display = 'flex';
+      twistBodyControl.style.display = 'none';
+      if (sectionTitle) sectionTitle.textContent = 'Movements';
+      if (controlsDisplay) controlsDisplay.textContent = 'Movement';
+    }
+  };
+
+  if (switchModeBtn) {
+    switchModeBtn.addEventListener('click', () => {
+      switchMode(true);
+    });
+  }
+
+  if (switchModeBackBtn) {
+    switchModeBackBtn.addEventListener('click', () => {
+      switchMode(false);
+    });
+  }
+
+  // Twist corner handlers
+  const twistPad = document.getElementById('twistPad');
+  const twistCursor = document.getElementById('twistCursor');
+  const twistValue = document.getElementById('twistValue');
+  let isDraggingTwist = false;
+
+  const updateTwistPosition = (e) => {
+    if (!twistPad) return;
+    
+    const rect = twistPad.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Clamp to pad boundaries
+    const clampedX = Math.max(0, Math.min(x, rect.width));
+    const clampedY = Math.max(0, Math.min(y, rect.height));
+    
+    // Convert pixel coordinates to -10 to 10 range
+    // Left edge (0px) = -10, Right edge (120px) = 10
+    // Top edge (0px) = 10, Bottom edge (120px) = -10
+    const normX = (clampedX / rect.width) * 20 - 10;
+    const normY = 10 - (clampedY / rect.height) * 20;
+    
+    // Update cursor position
+    twistCursor.style.left = clampedX + 'px';
+    twistCursor.style.top = clampedY + 'px';
+    
+    // Display value
+    twistValue.textContent = `(${normX.toFixed(1)}, ${normY.toFixed(1)})`;
+    
+    console.log('Twist Body Control:', `${normX.toFixed(1)}, ${normY.toFixed(1)}`);
+  };
+
+  if (twistPad) {
+    twistPad.addEventListener('mousedown', (e) => {
+      isDraggingTwist = true;
+      twistCursor.classList.add('active');
+      updateTwistPosition(e);
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isDraggingTwist) {
+        updateTwistPosition(e);
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDraggingTwist = false;
+      twistCursor.classList.remove('active');
+      twistValue.textContent = 'Ready';
+    });
+
+    twistPad.addEventListener('click', (e) => {
+      if (e.target === twistPad || e.target.closest('.twist-crosshair')) {
+        // Single click without drag - just register the position
+        updateTwistPosition(e);
+        setTimeout(() => {
+          twistCursor.classList.remove('active');
+          twistValue.textContent = 'Ready';
+        }, 100);
+      }
+    });
+
+    // Touch support
+    twistPad.addEventListener('touchstart', (e) => {
+      isDraggingTwist = true;
+      twistCursor.classList.add('active');
+      const touch = e.touches[0];
+      const mouseEvent = new MouseEvent('mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      updateTwistPosition(mouseEvent);
+    });
+
+    document.addEventListener('touchmove', (e) => {
+      if (isDraggingTwist) {
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        });
+        updateTwistPosition(mouseEvent);
+      }
+    });
+
+    document.addEventListener('touchend', () => {
+      isDraggingTwist = false;
+      twistCursor.classList.remove('active');
+      twistValue.textContent = 'Ready';
+    });
+  }
 
   document.addEventListener('keydown', (e) => {
     const target = e.target;
     const tag = target && target.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable) return;
     const k = (e.key || '').toLowerCase();
+    
+    // Check for mode switch key (X)
+    if (k === 'x') {
+      e.preventDefault && e.preventDefault();
+      switchMode(!isInTwistMode);
+      return;
+    }
+
+    // If in twist mode, ignore movement commands
+    if (isInTwistMode) return;
+
     const cmd = keyMap[k];
     if (!cmd) return;
     // prevent page scrolling when using arrow keys for movement

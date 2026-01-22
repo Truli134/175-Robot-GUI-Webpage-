@@ -226,6 +226,68 @@ body.dark{
 
 .panel h3{ margin:0 0 8px 0; color:var(--text); }
 
+/* Twist Body Control UI */
+.twist-body-control{ display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; }
+.twist-pad{
+  position:relative;
+  width:120px;
+  height:120px;
+  background: linear-gradient(180deg, rgba(11,102,255,0.08) 0%, rgba(11,102,255,0.04) 100%);
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:crosshair;
+  user-select:none;
+}
+.twist-crosshair{
+  position:absolute;
+  width:40px;
+  height:2px;
+  background: rgba(11,102,255,0.3);
+  left:50%;
+  top:50%;
+  transform: translateX(-50%) translateY(-50%);
+  pointer-events:none;
+}
+.twist-crosshair::after{
+  content:'';
+  position:absolute;
+  width:2px;
+  height:40px;
+  background: rgba(11,102,255,0.3);
+  left:50%;
+  top:50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+.twist-cursor{
+  position:absolute;
+  width:12px;
+  height:12px;
+  background: var(--accent);
+  border: 2px solid rgba(11,102,255,0.5);
+  border-radius: 50%;
+  left:50%;
+  top:50%;
+  transform: translate(-50%, -50%);
+  pointer-events:none;
+  opacity:0;
+  transition: opacity 100ms ease;
+  box-shadow: 0 0 8px rgba(11,102,255,0.3);
+}
+.twist-cursor.active{
+  opacity:1;
+}
+.twist-value{
+  position:absolute;
+  font-size:12px;
+  color:var(--accent);
+  font-weight:600;
+  white-space:nowrap;
+  pointer-events:none;
+}
+
 .muted{ color:var(--muted); }
 
 /* Layout to match the wireframe */

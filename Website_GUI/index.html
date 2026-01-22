@@ -36,11 +36,11 @@
 
       <section class="panel sensors" aria-label="Movements">
         <strong>Movements</strong>
-        <div class="movements">
+        <div class="movements" id="movementControls">
           <button class="movement-btn" data-cmd="forward" aria-label="Forward">▲<span>Forward</span></button>
           <div class="row">
             <button class="movement-btn" data-cmd="left" aria-label="Left">◀<span>Left</span></button>
-            <button class="movement-btn" data-cmd="stop" aria-label="Stop">■<span>Stop</span></button>
+            <button class="movement-btn" id="switchModeBtn" aria-label="Switch to Twist Body Control">⟲<span>Switch Mode</span></button>
             <button class="movement-btn" data-cmd="right" aria-label="Right">▶<span>Right</span></button>
           </div>
           <button class="movement-btn" data-cmd="backward" aria-label="Backward">▼<span>Backward</span></button>
@@ -51,11 +51,21 @@
           </div>
           <div class="hint">Hover any command to preview (visual only).</div>
         </div>
+
+        <div class="twist-body-control" id="twistBodyControl" style="display: none;">
+          <div class="twist-pad" id="twistPad">
+            <div class="twist-crosshair"></div>
+            <div class="twist-cursor" id="twistCursor"></div>
+            <div class="twist-value" id="twistValue">Ready</div>
+          </div>
+          <button class="movement-btn" id="switchModeBackBtn" style="margin-top: 10px;" aria-label="Switch back to Movement Controls">⟲<span>Back to Move</span></button>
+          <div class="hint">Click or drag within the pad.</div>
+        </div>
       </section>
 
       <section class="panel footer" aria-label="Additional info">
         <div>Battery: <span class="muted">--%</span></div>
-        <div>Controls: <span class="muted">Basic</span></div>
+        <div>Controls: <span class="muted" id="controlsDisplay">Movement</span></div>
       </section>
     </main>
   </div>
