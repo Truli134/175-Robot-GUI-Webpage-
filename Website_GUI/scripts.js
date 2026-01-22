@@ -27,6 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
     applyTheme(theme);
   });
 
+  // Theme toggle with 'M' key
+  const toggleTheme = () => {
+    const isDark = document.body.classList.toggle('dark');
+    const theme = isDark ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
+    applyTheme(theme);
+  };
+
   // Gas chart (placeholder) using Chart.js
   const gasCanvas = document.getElementById('gasChart');
   const ctx = gasCanvas.getContext('2d');
@@ -289,6 +297,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable) return;
     const k = (e.key || '').toLowerCase();
     
+    // Check for theme toggle key (M)
+    if (k === 'm') {
+      e.preventDefault && e.preventDefault();
+      toggleTheme();
+      return;
+    }
+
     // Check for mode switch key (X)
     if (k === 'x') {
       e.preventDefault && e.preventDefault();
