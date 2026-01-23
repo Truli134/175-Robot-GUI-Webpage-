@@ -386,6 +386,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Check for all graphs page key (G)
+    if (k === 'g') {
+      e.preventDefault && e.preventDefault();
+      window.location.href = 'graphs.html';
+      return;
+    }
+
     // If in twist mode, ignore movement commands
     if (isInTwistMode) return;
 

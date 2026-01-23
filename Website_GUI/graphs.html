@@ -13,6 +13,20 @@
     .graphs-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
     .back-link{ text-decoration:none; color:var(--accent); font-weight:600; }
   </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('keydown', function(e) {
+          const target = e.target;
+          const tag = target && target.tagName;
+          if (tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable) return;
+          const k = (e.key || '').toLowerCase();
+          if (k === 'g') {
+            e.preventDefault && e.preventDefault();
+            window.location.href = 'index.html';
+          }
+        });
+      });
+    </script>
 </head>
 <body>
   <div class="graphs-wrap">
