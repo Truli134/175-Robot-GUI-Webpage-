@@ -228,6 +228,9 @@ body.dark{
 
 /* Twist Body Control UI */
 .twist-body-control{ display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; }
+.twist-controls-row{ display:flex; gap:20px; justify-content:center; align-items:flex-start; width:100%; }
+.twist-control-group{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+.twist-label{ font-size:14px; font-weight:600; color:var(--accent); }
 .twist-pad{
   position:relative;
   width:120px;

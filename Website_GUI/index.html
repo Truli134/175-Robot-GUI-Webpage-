@@ -53,13 +53,26 @@
         </div>
 
         <div class="twist-body-control" id="twistBodyControl" style="display: none;">
-          <div class="twist-pad" id="twistPad">
-            <div class="twist-crosshair"></div>
-            <div class="twist-cursor" id="twistCursor"></div>
-            <div class="twist-value" id="twistValue">Ready</div>
+          <div class="twist-controls-row">
+            <div class="twist-control-group">
+              <div class="twist-label">Twist</div>
+              <div class="twist-pad" id="twistPad">
+                <div class="twist-crosshair"></div>
+                <div class="twist-cursor" id="twistCursor"></div>
+                <div class="twist-value" id="twistValue">Ready</div>
+              </div>
+            </div>
+            <div class="twist-control-group">
+              <div class="twist-label">Rotate</div>
+              <div class="twist-pad" id="rotatePad">
+                <div class="twist-crosshair"></div>
+                <div class="twist-cursor" id="rotateCursor"></div>
+                <div class="twist-value" id="rotateValue">Ready</div>
+              </div>
+            </div>
           </div>
           <button class="movement-btn" id="switchModeBackBtn" style="margin-top: 10px;" aria-label="Switch back to Movement Controls">⟲<span>Back to Move</span></button>
-          <div class="hint">Click or drag within the pad.</div>
+          <div class="hint">Click or drag within the pads.</div>
         </div>
       </section>
 

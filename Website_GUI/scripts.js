@@ -202,7 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const twistPad = document.getElementById('twistPad');
   const twistCursor = document.getElementById('twistCursor');
   const twistValue = document.getElementById('twistValue');
+  const rotatePad = document.getElementById('rotatePad');
+  const rotateCursor = document.getElementById('rotateCursor');
+  const rotateValue = document.getElementById('rotateValue');
   let isDraggingTwist = false;
+  let isDraggingRotate = false;
 
   const updateTwistPosition = (e) => {
     if (!twistPad) return;
@@ -231,6 +235,31 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Twist Body Control:', `${normX.toFixed(1)}, ${normY.toFixed(1)}`);
   };
 
+  const updateRotatePosition = (e) => {
+    if (!rotatePad) return;
+    
+    const rect = rotatePad.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Clamp to pad boundaries
+    const clampedX = Math.max(0, Math.min(x, rect.width));
+    const clampedY = Math.max(0, Math.min(y, rect.height));
+    
+    // Convert pixel coordinates to -10 to 10 range
+    const normX = (clampedX / rect.width) * 20 - 10;
+    const normY = 10 - (clampedY / rect.height) * 20;
+    
+    // Update cursor position
+    rotateCursor.style.left = clampedX + 'px';
+    rotateCursor.style.top = clampedY + 'px';
+    
+    // Display value
+    rotateValue.textContent = `(${normX.toFixed(1)}, ${normY.toFixed(1)})`;
+    
+    console.log('Rotate Control:', `${normX.toFixed(1)}, ${normY.toFixed(1)}`);
+  };
+
   if (twistPad) {
     twistPad.addEventListener('mousedown', (e) => {
       isDraggingTwist = true;
@@ -238,21 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
       updateTwistPosition(e);
     });
 
-    document.addEventListener('mousemove', (e) => {
-      if (isDraggingTwist) {
-        updateTwistPosition(e);
-      }
-    });
-
-    document.addEventListener('mouseup', () => {
-      isDraggingTwist = false;
-      twistCursor.classList.remove('active');
-      twistValue.textContent = 'Ready';
-    });
-
     twistPad.addEventListener('click', (e) => {
       if (e.target === twistPad || e.target.closest('.twist-crosshair')) {
-        // Single click without drag - just register the position
         updateTwistPosition(e);
         setTimeout(() => {
           twistCursor.classList.remove('active');
@@ -272,24 +288,83 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       updateTwistPosition(mouseEvent);
     });
+  }
 
-    document.addEventListener('touchmove', (e) => {
-      if (isDraggingTwist) {
-        const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousemove', {
-          clientX: touch.clientX,
-          clientY: touch.clientY
-        });
-        updateTwistPosition(mouseEvent);
+  if (rotatePad) {
+    rotatePad.addEventListener('mousedown', (e) => {
+      isDraggingRotate = true;
+      rotateCursor.classList.add('active');
+      updateRotatePosition(e);
+    });
+
+    rotatePad.addEventListener('click', (e) => {
+      if (e.target === rotatePad || e.target.closest('.twist-crosshair')) {
+        updateRotatePosition(e);
+        setTimeout(() => {
+          rotateCursor.classList.remove('active');
+          rotateValue.textContent = 'Ready';
+        }, 100);
       }
     });
 
-    document.addEventListener('touchend', () => {
-      isDraggingTwist = false;
-      twistCursor.classList.remove('active');
-      twistValue.textContent = 'Ready';
+    // Touch support
+    rotatePad.addEventListener('touchstart', (e) => {
+      isDraggingRotate = true;
+      rotateCursor.classList.add('active');
+      const touch = e.touches[0];
+      const mouseEvent = new MouseEvent('mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      updateRotatePosition(mouseEvent);
     });
   }
+
+  document.addEventListener('mousemove', (e) => {
+    if (isDraggingTwist) {
+      updateTwistPosition(e);
+    }
+    if (isDraggingRotate) {
+      updateRotatePosition(e);
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDraggingTwist = false;
+    isDraggingRotate = false;
+    twistCursor.classList.remove('active');
+    rotateCursor.classList.remove('active');
+    twistValue.textContent = 'Ready';
+    rotateValue.textContent = 'Ready';
+  });
+
+  document.addEventListener('touchmove', (e) => {
+    if (isDraggingTwist) {
+      const touch = e.touches[0];
+      const mouseEvent = new MouseEvent('mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      updateTwistPosition(mouseEvent);
+    }
+    if (isDraggingRotate) {
+      const touch = e.touches[0];
+      const mouseEvent = new MouseEvent('mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      updateRotatePosition(mouseEvent);
+    }
+  });
+
+  document.addEventListener('touchend', () => {
+    isDraggingTwist = false;
+    isDraggingRotate = false;
+    twistCursor.classList.remove('active');
+    rotateCursor.classList.remove('active');
+    twistValue.textContent = 'Ready';
+    rotateValue.textContent = 'Ready';
+  });
 
   document.addEventListener('keydown', (e) => {
     const target = e.target;
