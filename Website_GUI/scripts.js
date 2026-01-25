@@ -71,25 +71,44 @@ document.addEventListener('DOMContentLoaded', () => {
     gasChart.update();
   }, 1600);
 
-  // Camera connect
+  // Camera connect / disconnect toggle
   const btn = document.getElementById('btnCamera');
   const video = document.getElementById('camera');
   const status = document.getElementById('camStatus');
+  let currentStream = null;
 
-  btn.addEventListener('click', async () => {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      status.textContent = 'Camera API not supported';
-      return;
-    }
+  const setCameraUI = (connected) => {
+    if (status) status.textContent = connected ? 'Connected' : 'Not connected';
+    if (btn) btn.textContent = connected ? 'Disconnect Camera' : 'Connect Camera';
+  };
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.srcObject = stream;
-      status.textContent = 'Connected';
-    } catch (err) {
-      status.textContent = 'Camera denied or unavailable';
-    }
-  });
+  if (btn && video) {
+    btn.addEventListener('click', async () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        if (status) status.textContent = 'Camera API not supported';
+        return;
+      }
+
+      // If already connected, disconnect
+      if (currentStream) {
+        currentStream.getTracks().forEach((t) => t.stop());
+        video.srcObject = null;
+        currentStream = null;
+        setCameraUI(false);
+        return;
+      }
+
+      // Otherwise, attempt to connect
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        currentStream = stream;
+        setCameraUI(true);
+      } catch (err) {
+        if (status) status.textContent = 'Camera denied or unavailable';
+      }
+    });
+  }
 
   // Fullscreen toggle for camera
   const fsBtn = document.getElementById('btnFullscreen');
