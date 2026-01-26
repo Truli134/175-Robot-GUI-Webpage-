@@ -1,0 +1,15 @@
+{
+  "name": "robot-gui-server",
+  "version": "1.0.0",
+  "description": "Backend server for Robot GUI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "serialport": "^11.0.1",
+    "cors": "^2.8.5"
+  }
+}

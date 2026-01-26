@@ -157,14 +157,85 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Movement button handlers (placeholder)
-  function handleMovement(cmd, btn){
+  // Robot connection status
+  let robotConnected = false;
+  const robotStatus = document.createElement('div');
+  robotStatus.id = 'robotStatus';
+  robotStatus.style.cssText = 'position: fixed; top: 10px; right: 10px; padding: 10px 15px; border-radius: 4px; font-size: 12px; font-weight: bold; z-index: 1000; background: #ffcccc; color: #333; display: none;';
+  document.body.appendChild(robotStatus);
+
+  // Check robot connection on page load
+  async function checkRobotConnection() {
+    try {
+      const res = await fetch('http://localhost:3000/api/status');
+      const data = await res.json();
+      robotConnected = data.connected;
+      updateRobotStatusUI();
+    } catch (err) {
+      console.warn('Could not reach server:', err);
+    }
+  }
+
+  function updateRobotStatusUI() {
+    if (robotConnected) {
+      robotStatus.textContent = '✓ Robot Connected';
+      robotStatus.style.background = '#ccffcc';
+      robotStatus.style.color = '#333';
+    } else {
+      robotStatus.textContent = '✗ Robot Disconnected';
+      robotStatus.style.background = '#ffcccc';
+      robotStatus.style.color = '#333';
+    }
+    robotStatus.style.display = 'block';
+  }
+
+  // Connect to robot button
+  const connectRobotBtn = document.createElement('button');
+  connectRobotBtn.textContent = 'Connect Robot';
+  connectRobotBtn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; padding: 10px 15px; background: #0b66ff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; z-index: 999;';
+  document.body.appendChild(connectRobotBtn);
+
+  connectRobotBtn.addEventListener('click', async () => {
+    try {
+      const endpoint = robotConnected ? '/api/disconnect' : '/api/connect';
+      const res = await fetch(`http://localhost:3000${endpoint}`, { method: 'POST' });
+      const data = await res.json();
+      console.log('Robot response:', data);
+      robotConnected = data.status === 'connected';
+      updateRobotStatusUI();
+      connectRobotBtn.textContent = robotConnected ? 'Disconnect Robot' : 'Connect Robot';
+    } catch (err) {
+      console.error('Error connecting to robot:', err);
+      alert('Error: Could not reach server. Make sure server is running on localhost:3000');
+    }
+  });
+
+  checkRobotConnection();
+
+  // Movement button handlers
+  async function handleMovement(cmd, btn){
     if(btn){
       btn.classList.add('pressed');
       setTimeout(() => btn.classList.remove('pressed'), 180);
     }
     console.log('Movement command:', cmd);
-    // TODO: send command to robot (e.g., via WebSocket / REST)
+    
+    if (!robotConnected) {
+      console.warn('Robot not connected');
+      return;
+    }
+
+    try {
+      const res = await fetch('http://localhost:3000/api/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command: cmd })
+      });
+      const data = await res.json();
+      console.log('Robot response:', data);
+    } catch (err) {
+      console.error('Error sending command:', err);
+    }
   }
 
   document.addEventListener('click', (ev) => {
