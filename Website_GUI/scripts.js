@@ -126,20 +126,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (exitFsBtn) exitFsBtn.style.display = isFs ? 'inline-flex' : 'none';
   };
 
-  if (fsBtn && cameraWrap) {
-    fsBtn.addEventListener('click', async () => {
-      try {
-        if (getFullscreenElement() === cameraWrap) {
-          if (document.exitFullscreen) await document.exitFullscreen();
-          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        } else {
-          if (cameraWrap.requestFullscreen) await cameraWrap.requestFullscreen();
-          else if (cameraWrap.webkitRequestFullscreen) cameraWrap.webkitRequestFullscreen();
-        }
-      } catch (err) {
-        console.warn('Fullscreen error', err);
+  const toggleFullscreen = async () => {
+    if (!cameraWrap) return;
+    try {
+      if (getFullscreenElement() === cameraWrap) {
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } else {
+        if (cameraWrap.requestFullscreen) await cameraWrap.requestFullscreen();
+        else if (cameraWrap.webkitRequestFullscreen) cameraWrap.webkitRequestFullscreen();
       }
-    });
+    } catch (err) {
+      console.warn('Fullscreen error', err);
+    }
+  };
+
+  if (fsBtn && cameraWrap) {
+    fsBtn.addEventListener('click', toggleFullscreen);
 
     document.addEventListener('fullscreenchange', updateFsButton);
     document.addEventListener('webkitfullscreenchange', updateFsButton);
@@ -508,6 +511,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (k === 'm') {
       e.preventDefault && e.preventDefault();
       toggleTheme();
+      return;
+    }
+
+    // Check for fullscreen toggle key (F)
+    if (k === 'f') {
+      e.preventDefault && e.preventDefault();
+      toggleFullscreen();
       return;
     }
 
