@@ -162,6 +162,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Close fullscreen on ESC key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const fsElement = document.fullscreenElement || document.webkitFullscreenElement;
+      if (fsElement) {
+        try {
+          if (document.exitFullscreen) document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        } catch (err) {
+          console.warn('Exit fullscreen error', err);
+        }
+      }
+    }
+  }, { once: false });
+
   // Robot connection status
   let robotConnected = false;
   const robotStatus = document.createElement('div');

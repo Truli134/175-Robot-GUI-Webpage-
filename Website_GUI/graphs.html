@@ -21,6 +21,89 @@
     .panel.flashing {
       animation: flash-red 0.6s ease-in-out 3;
     }
+
+    /* Fullscreen graph overlay */
+    .graph-fullscreen-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .graph-fullscreen-overlay.active {
+      display: flex;
+    }
+
+    .graph-fullscreen-container {
+      background: var(--panel-bg);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 20px;
+      width: 90vw;
+      height: 90vh;
+      max-width: 1400px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .graph-fullscreen-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .graph-fullscreen-header h3 {
+      margin: 0;
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    .graph-fullscreen-close {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .graph-fullscreen-close:hover {
+      background: rgba(11, 102, 255, 0.1);
+    }
+
+    .graph-fullscreen-content {
+      display: flex;
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .graph-fullscreen-table {
+      flex: 0 0 250px;
+      overflow-y: auto;
+    }
+
+    .graph-fullscreen-chart {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .graph-fullscreen-chart canvas {
+      max-height: 100%;
+    }
   </style>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -75,6 +158,22 @@
       <div class="panel small">
         <h4>Graph 6</h4>
         <table id="table6" class="compact-table" aria-label="Graph 6 live table"></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Graph Overlay -->
+  <div class="graph-fullscreen-overlay" id="graphFullscreenOverlay">
+    <div class="graph-fullscreen-container">
+      <div class="graph-fullscreen-header">
+        <h3 id="fullscreenGraphTitle">Graph</h3>
+        <button class="graph-fullscreen-close" id="fullscreenCloseBtn">✕ Close</button>
+      </div>
+      <div class="graph-fullscreen-content">
+        <div class="graph-fullscreen-table" id="fullscreenTableContainer"></div>
+        <div class="graph-fullscreen-chart" id="fullscreenChartContainer">
+          <canvas id="fullscreenGraphChart"></canvas>
+        </div>
       </div>
     </div>
   </div>
@@ -166,11 +265,117 @@
     const tables = [];
     for(let i=1;i<=6;i++) tables.push( createTableData('table'+i) );
 
+    // Store historical data for each graph
+    const graphData = {};
+    for(let i=1;i<=6;i++) graphData[i] = { labels: [], values: [] };
+
+    // Fullscreen graph functionality
+    const overlay = document.getElementById('graphFullscreenOverlay');
+    const closeBtn = document.getElementById('fullscreenCloseBtn');
+    let fullscreenChart = null;
+    let currentFullscreenGraphId = null;
+
+    const openFullscreenGraph = (graphId) => {
+      currentFullscreenGraphId = graphId;
+      const panel = document.querySelector(`.panel:has(#table${graphId})`);
+      const h4 = panel.querySelector('h4');
+      document.getElementById('fullscreenGraphTitle').textContent = h4.textContent;
+
+      // Clone the table
+      const originalTable = document.getElementById(`table${graphId}`);
+      const tableContainer = document.getElementById('fullscreenTableContainer');
+      tableContainer.innerHTML = '';
+      const clonedTable = originalTable.cloneNode(true);
+      clonedTable.style.width = '100%';
+      tableContainer.appendChild(clonedTable);
+
+      // Create line chart with historical data
+      const canvas = document.getElementById('fullscreenGraphChart');
+      const ctx = canvas.getContext('2d');
+
+      // Destroy previous chart if it exists
+      if (fullscreenChart) {
+        fullscreenChart.destroy();
+      }
+
+      const data = graphData[graphId];
+      fullscreenChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.labels.slice(-20),
+          datasets: [{
+            label: `Graph ${graphId}`,
+            data: data.values.slice(-20),
+            borderColor: 'rgba(11,102,255,0.95)',
+            backgroundColor: 'rgba(11,102,255,0.12)',
+            tension: 0.3,
+            fill: true,
+            borderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: 'rgba(11,102,255,0.95)',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 120,
+              title: { display: true, text: 'Value' }
+            },
+            x: {
+              title: { display: true, text: 'Time' }
+            }
+          }
+        }
+      });
+
+      overlay.classList.add('active');
+    };
+
+    const closeFullscreenGraph = () => {
+      overlay.classList.remove('active');
+      if (fullscreenChart) {
+        fullscreenChart.destroy();
+        fullscreenChart = null;
+      }
+      currentFullscreenGraphId = null;
+    };
+
+    closeBtn.addEventListener('click', closeFullscreenGraph);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        closeFullscreenGraph();
+      }
+    });
+
+    // Close fullscreen graph on ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.classList.contains('active')) {
+        closeFullscreenGraph();
+      }
+    });
+
+    // Add double-click listeners to graph panels
+    for(let i=1;i<=6;i++) {
+      const panel = document.querySelector(`.panel:has(#table${i})`);
+      panel.style.cursor = 'pointer';
+      panel.addEventListener('dblclick', () => {
+        openFullscreenGraph(i);
+      });
+    }
+
     // update each table every 1.5s with new value, keeping 6 rows
     setInterval(()=>{
       const t = new Date().toLocaleTimeString();
       tables.forEach((obj, idx)=>{
         if(!obj) return;
+        const graphId = idx + 1;
         const tr = document.createElement('tr');
         const td1 = document.createElement('td'); td1.textContent = t; tr.appendChild(td1);
         const value = (Math.random()*100).toFixed(1);
@@ -178,6 +383,10 @@
         obj.tbody.appendChild(tr);
         // keep to 6 rows
         while(obj.tbody.rows.length>6) obj.tbody.removeChild(obj.tbody.firstChild);
+
+        // Store historical data
+        graphData[graphId].labels.push(t);
+        graphData[graphId].values.push(parseFloat(value));
         
         // Check if value is between 30-35 and flash the panel
         const numValue = parseFloat(value);
@@ -190,6 +399,18 @@
               panel.classList.remove('flashing');
             }, 1800); // 3 cycles × 0.6s = 1.8s
           }
+        }
+
+        // Update fullscreen chart if it's open
+        if (currentFullscreenGraphId === graphId && fullscreenChart) {
+          fullscreenChart.data.labels.push(t);
+          fullscreenChart.data.datasets[0].data.push(parseFloat(value));
+          // Keep only last 20 data points
+          if (fullscreenChart.data.labels.length > 20) {
+            fullscreenChart.data.labels.shift();
+            fullscreenChart.data.datasets[0].data.shift();
+          }
+          fullscreenChart.update();
         }
       });
     },1500);
