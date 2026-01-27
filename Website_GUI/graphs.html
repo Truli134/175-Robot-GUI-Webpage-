@@ -12,6 +12,15 @@
     .small{ min-height:160px; }
     .graphs-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
     .back-link{ text-decoration:none; color:var(--accent); font-weight:600; }
+    
+    /* Flash animation for warning values */
+    @keyframes flash-red {
+      0%, 100% { background-color: var(--panel-bg); }
+      50% { background-color: rgba(255, 68, 68, 0.3); }
+    }
+    .panel.flashing {
+      animation: flash-red 0.6s ease-in-out 3;
+    }
   </style>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -164,10 +173,24 @@
         if(!obj) return;
         const tr = document.createElement('tr');
         const td1 = document.createElement('td'); td1.textContent = t; tr.appendChild(td1);
-        const td2 = document.createElement('td'); td2.textContent = (Math.random()*100).toFixed(1); tr.appendChild(td2);
+        const value = (Math.random()*100).toFixed(1);
+        const td2 = document.createElement('td'); td2.textContent = value; tr.appendChild(td2);
         obj.tbody.appendChild(tr);
         // keep to 6 rows
         while(obj.tbody.rows.length>6) obj.tbody.removeChild(obj.tbody.firstChild);
+        
+        // Check if value is between 30-35 and flash the panel
+        const numValue = parseFloat(value);
+        if (numValue >= 30 && numValue <= 35) {
+          const panel = obj.table.closest('.panel');
+          if (panel) {
+            panel.classList.add('flashing');
+            // Remove the flashing class after animation completes
+            setTimeout(() => {
+              panel.classList.remove('flashing');
+            }, 1800); // 3 cycles × 0.6s = 1.8s
+          }
+        }
       });
     },1500);
   </script>
