@@ -82,32 +82,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btn) btn.textContent = connected ? 'Disconnect Camera' : 'Connect Camera';
   };
 
+  const toggleCamera = async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      if (status) status.textContent = 'Camera API not supported';
+      return;
+    }
+
+    // If already connected, disconnect
+    if (currentStream) {
+      currentStream.getTracks().forEach((t) => t.stop());
+      video.srcObject = null;
+      currentStream = null;
+      setCameraUI(false);
+      return;
+    }
+
+    // Otherwise, attempt to connect
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      currentStream = stream;
+      setCameraUI(true);
+    } catch (err) {
+      if (status) status.textContent = 'Camera denied or unavailable';
+    }
+  };
+
   if (btn && video) {
-    btn.addEventListener('click', async () => {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        if (status) status.textContent = 'Camera API not supported';
-        return;
-      }
-
-      // If already connected, disconnect
-      if (currentStream) {
-        currentStream.getTracks().forEach((t) => t.stop());
-        video.srcObject = null;
-        currentStream = null;
-        setCameraUI(false);
-        return;
-      }
-
-      // Otherwise, attempt to connect
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = stream;
-        currentStream = stream;
-        setCameraUI(true);
-      } catch (err) {
-        if (status) status.textContent = 'Camera denied or unavailable';
-      }
-    });
+    btn.addEventListener('click', toggleCamera);
   }
 
   // Fullscreen toggle for camera
@@ -507,6 +509,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable) return;
     const k = (e.key || '').toLowerCase();
     
+    // Check for camera toggle key (H)
+    if (k === 'h') {
+      e.preventDefault && e.preventDefault();
+      toggleCamera();
+      return;
+    }
+
     // Check for theme toggle key (M)
     if (k === 'm') {
       e.preventDefault && e.preventDefault();
