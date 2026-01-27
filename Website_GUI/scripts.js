@@ -404,14 +404,12 @@ document.addEventListener('DOMContentLoaded', () => {
       updateTwistPosition(e);
     });
 
-    twistPad.addEventListener('click', (e) => {
-      if (e.target === twistPad || e.target.closest('.twist-crosshair')) {
-        updateTwistPosition(e);
-        setTimeout(() => {
-          twistCursor.classList.remove('active');
-          twistValue.textContent = 'Ready';
-        }, 100);
-      }
+    twistPad.addEventListener('dblclick', (e) => {
+      // Reset cursor to center
+      twistCursor.style.left = '60px';
+      twistCursor.style.top = '60px';
+      twistValue.textContent = '(0.0, 0.0)';
+      console.log('Twist Body Control: Reset to (0.0, 0.0)');
     });
 
     // Touch support
@@ -434,14 +432,12 @@ document.addEventListener('DOMContentLoaded', () => {
       updateRotatePosition(e);
     });
 
-    rotatePad.addEventListener('click', (e) => {
-      if (e.target === rotatePad || e.target.closest('.twist-crosshair')) {
-        updateRotatePosition(e);
-        setTimeout(() => {
-          rotateCursor.classList.remove('active');
-          rotateValue.textContent = 'Ready';
-        }, 100);
-      }
+    rotatePad.addEventListener('dblclick', (e) => {
+      // Reset cursor to center
+      rotateCursor.style.left = '60px';
+      rotateCursor.style.top = '60px';
+      rotateValue.textContent = '(0.0, 0.0)';
+      console.log('Rotate Control: Reset to (0.0, 0.0)');
     });
 
     // Touch support
@@ -469,10 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('mouseup', () => {
     isDraggingTwist = false;
     isDraggingRotate = false;
-    twistCursor.classList.remove('active');
-    rotateCursor.classList.remove('active');
-    twistValue.textContent = 'Ready';
-    rotateValue.textContent = 'Ready';
+    // Keep cursor visible, don't hide it or reset values
   });
 
   document.addEventListener('touchmove', (e) => {
@@ -497,10 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('touchend', () => {
     isDraggingTwist = false;
     isDraggingRotate = false;
-    twistCursor.classList.remove('active');
-    rotateCursor.classList.remove('active');
-    twistValue.textContent = 'Ready';
-    rotateValue.textContent = 'Ready';
+    // Keep cursor visible, don't hide it or reset values
   });
 
   document.addEventListener('keydown', (e) => {

@@ -275,7 +275,7 @@ body.dark{
   top:50%;
   transform: translate(-50%, -50%);
   pointer-events:none;
-  opacity:0;
+  opacity:1;
   transition: opacity 100ms ease;
   box-shadow: 0 0 8px rgba(11,102,255,0.3);
 }
