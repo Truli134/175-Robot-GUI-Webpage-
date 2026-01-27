@@ -359,6 +359,19 @@
       if (e.key === 'Escape' && overlay.classList.contains('active')) {
         closeFullscreenGraph();
       }
+      
+      // Open/close fullscreen graph with keys 1-6
+      const key = parseInt(e.key);
+      if (key >= 1 && key <= 6) {
+        e.preventDefault && e.preventDefault();
+        // If a fullscreen is already open, close it
+        if (overlay.classList.contains('active')) {
+          closeFullscreenGraph();
+        } else {
+          // Otherwise open the corresponding graph
+          openFullscreenGraph(key);
+        }
+      }
     });
 
     // Add double-click listeners to graph panels
