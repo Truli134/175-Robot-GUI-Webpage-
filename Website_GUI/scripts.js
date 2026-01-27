@@ -213,14 +213,37 @@ document.addEventListener('DOMContentLoaded', () => {
   checkRobotConnection();
 
   // Update voltage reading periodically
-  const voltageDisplay = document.querySelector('.footer span.muted');
+  const voltageDisplay = document.getElementById('voltageValue');
+  const powerStatus = document.getElementById('powerStatus');
   
   async function updateVoltage() {
     try {
       const res = await fetch('http://localhost:3000/api/voltage');
       const data = await res.json();
+      const voltage = data.voltage;
+      
       if (voltageDisplay) {
-        voltageDisplay.textContent = data.voltage.toFixed(1) + ' V';
+        voltageDisplay.textContent = voltage.toFixed(1) + ' V';
+      }
+      
+      // Update power status based on voltage
+      if (powerStatus) {
+        if (voltage >= 7.0) {
+          // Robot is ON (7V to 8+V)
+          powerStatus.textContent = '● ON';
+          powerStatus.style.background = '#4CAF50';
+          powerStatus.style.color = 'white';
+        } else if (voltage >= 1.0 && voltage <= 1.8) {
+          // Robot is OFF (1V to 1.8V)
+          powerStatus.textContent = '⚫ OFF';
+          powerStatus.style.background = '#666';
+          powerStatus.style.color = 'white';
+        } else {
+          // Intermediate/Unknown state
+          powerStatus.textContent = '◐ STANDBY';
+          powerStatus.style.background = '#FF9800';
+          powerStatus.style.color = 'white';
+        }
       }
     } catch (err) {
       console.warn('Could not fetch voltage:', err);
