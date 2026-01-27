@@ -8,6 +8,7 @@ const PORT = 3000;
 
 let port = null;
 let isConnected = false;
+let currentVoltage = 0.0;
 
 app.use(cors());
 app.use(express.json());
@@ -48,7 +49,15 @@ app.post('/api/connect', (req, res) => {
 
     // Handle incoming data
     port.on('data', (data) => {
-      console.log('Data from robot:', data.toString());
+      const message = data.toString().trim();
+      console.log('Data from robot:', message);
+      
+      // Parse voltage data - expects format like "V:12.5" or "VOLTAGE:12.5"
+      const voltageMatch = message.match(/V[OLTAGE]*:?\s*([\d.]+)/i);
+      if (voltageMatch) {
+        currentVoltage = parseFloat(voltageMatch[1]);
+        console.log('Updated voltage:', currentVoltage);
+      }
     });
 
     // Handle errors
@@ -78,7 +87,12 @@ app.post('/api/disconnect', (req, res) => {
 
 // Get connection status
 app.get('/api/status', (req, res) => {
-  res.json({ connected: isConnected });
+  res.json({ connected: isConnected, voltage: currentVoltage });
+});
+
+// Get voltage reading
+app.get('/api/voltage', (req, res) => {
+  res.json({ voltage: currentVoltage });
 });
 
 // Send movement command to robot

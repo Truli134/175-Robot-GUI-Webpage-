@@ -212,6 +212,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   checkRobotConnection();
 
+  // Update voltage reading periodically
+  const voltageDisplay = document.querySelector('.footer span.muted');
+  
+  async function updateVoltage() {
+    try {
+      const res = await fetch('http://localhost:3000/api/voltage');
+      const data = await res.json();
+      if (voltageDisplay) {
+        voltageDisplay.textContent = data.voltage.toFixed(1) + ' V';
+      }
+    } catch (err) {
+      console.warn('Could not fetch voltage:', err);
+    }
+  }
+
+  // Update voltage every 1 second
+  setInterval(updateVoltage, 1000);
+  updateVoltage(); // Initial update
+
   // Movement button handlers
   async function handleMovement(cmd, btn){
     if(btn){
