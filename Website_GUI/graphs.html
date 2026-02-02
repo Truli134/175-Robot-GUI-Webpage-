@@ -104,6 +104,62 @@
     .graph-fullscreen-chart canvas {
       max-height: 100%;
     }
+
+    /* Keyboard Shortcuts Section */
+    .shortcuts-section {
+      margin-top: 40px;
+      padding: 20px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 6px 18px rgba(12,20,40,0.04);
+    }
+
+    .shortcuts-section h3 {
+      margin: 0 0 15px 0;
+      color: var(--text);
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .shortcuts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .shortcut-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(11,102,255,0.04);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .shortcut-item kbd {
+      display: inline-block;
+      padding: 4px 8px;
+      background: var(--accent);
+      color: white;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .shortcut-item span {
+      color: var(--muted);
+    }
+
+    @media (max-width: 640px) {
+      .shortcuts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -158,6 +214,29 @@
       <div class="panel small">
         <h4>Graph 6</h4>
         <table id="table6" class="compact-table" aria-label="Graph 6 live table"></table>
+      </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Section -->
+    <div class="shortcuts-section">
+      <h3>Keyboard Shortcuts</h3>
+      <div class="shortcuts-grid">
+        <div class="shortcut-item">
+          <kbd>1</kbd> - <kbd>6</kbd>
+          <span>Open/Close fullscreen for Graph 1-6</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>M</kbd>
+          <span>Toggle Dark/Light Mode</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>ESC</kbd>
+          <span>Close Fullscreen Graph</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>G</kbd>
+          <span>Back to Dashboard</span>
+        </div>
       </div>
     </div>
   </div>
