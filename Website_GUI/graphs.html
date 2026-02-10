@@ -439,13 +439,17 @@
         closeFullscreenGraph();
       }
       
-      // Open/close fullscreen graph with keys 1-6
+      // Open/switch fullscreen graph with keys 1-6
       const key = parseInt(e.key);
       if (key >= 1 && key <= 6) {
         e.preventDefault && e.preventDefault();
-        // If a fullscreen is already open, close it
         if (overlay.classList.contains('active')) {
-          closeFullscreenGraph();
+          // Toggle off if the same graph is active, otherwise switch
+          if (currentFullscreenGraphId === key) {
+            closeFullscreenGraph();
+          } else {
+            openFullscreenGraph(key);
+          }
         } else {
           // Otherwise open the corresponding graph
           openFullscreenGraph(key);
