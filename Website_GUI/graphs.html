@@ -491,6 +491,14 @@
               panel.classList.remove('flashing');
             }, 1800); // 3 cycles × 0.6s = 1.8s
           }
+
+          // Persist the alert graph for the main dashboard
+          const alertPayload = {
+            labels: graphData[graphId].labels.slice(-20),
+            values: graphData[graphId].values.slice(-20)
+          };
+          localStorage.setItem('alertGraphId', String(graphId));
+          localStorage.setItem('alertGraphData', JSON.stringify(alertPayload));
         }
 
         // Update fullscreen chart if it's open

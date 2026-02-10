@@ -37,13 +37,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Gas chart (placeholder) using Chart.js
   const gasCanvas = document.getElementById('gasChart');
+  const graphTitle = document.getElementById('graphTitle');
   const ctx = gasCanvas.getContext('2d');
 
-  const initialData = Array.from({ length: 20 }, () => Math.round(Math.random() * 120));
+  const alertGraphId = localStorage.getItem('alertGraphId');
+  const alertGraphData = localStorage.getItem('alertGraphData');
+
+  let initialLabels = Array.from({ length: 20 }, () => '');
+  let initialData = Array.from({ length: 20 }, () => Math.round(Math.random() * 120));
+  let datasetLabel = 'Gas (ppm)';
+
+  if (alertGraphId && alertGraphData) {
+    try {
+      const parsed = JSON.parse(alertGraphData);
+      if (parsed && Array.isArray(parsed.labels) && Array.isArray(parsed.values)) {
+        initialLabels = parsed.labels.slice(-20);
+        initialData = parsed.values.slice(-20);
+        datasetLabel = `Graph ${alertGraphId} (Alert)`;
+        if (graphTitle) graphTitle.textContent = `Graph ${alertGraphId} Alert`;
+      }
+    } catch (err) {
+      console.warn('Alert graph data parse error', err);
+    }
+  }
+
   const data = {
-    labels: Array.from({ length: 20 }, () => ''),
+    labels: initialLabels,
     datasets: [{
-      label: 'Gas (ppm)',
+      label: datasetLabel,
       data: initialData,
       borderColor: 'rgba(11,102,255,0.95)',
       backgroundColor: 'rgba(11,102,255,0.12)',
@@ -64,8 +85,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const gasChart = new Chart(ctx, config);
 
+  const applyAlertGraphFromStorage = () => {
+    const storedId = localStorage.getItem('alertGraphId');
+    const storedData = localStorage.getItem('alertGraphData');
+    if (!storedId || !storedData) return;
+    try {
+      const parsed = JSON.parse(storedData);
+      if (!parsed || !Array.isArray(parsed.labels) || !Array.isArray(parsed.values)) return;
+      data.labels = parsed.labels.slice(-20);
+      data.datasets[0].data = parsed.values.slice(-20);
+      data.datasets[0].label = `Graph ${storedId} (Alert)`;
+      if (graphTitle) graphTitle.textContent = `Graph ${storedId} Alert`;
+      gasChart.update();
+    } catch (err) {
+      console.warn('Alert graph data parse error', err);
+    }
+  };
+
+  // Update if another tab flags a new alert graph
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'alertGraphId' || e.key === 'alertGraphData') {
+      applyAlertGraphFromStorage();
+    }
+  });
+
   // push new random value periodically
   setInterval(() => {
+    data.labels.shift();
+    data.labels.push('');
     data.datasets[0].data.shift();
     data.datasets[0].data.push(Math.round(Math.random() * 140));
     gasChart.update();
