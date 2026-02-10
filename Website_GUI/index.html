@@ -40,7 +40,7 @@
           <button class="movement-btn" data-cmd="forward" aria-label="Forward">▲<span>Forward</span></button>
           <div class="row">
             <button class="movement-btn" data-cmd="left" aria-label="Left">◀<span>Left</span></button>
-            <button class="movement-btn" id="switchModeBtn" aria-label="Switch to Twist Body Control">⟲<span>Switch Mode</span></button>
+            <button class="movement-btn" id="stopBtn" aria-label="Stop all movement">■<span>Stop</span></button>
             <button class="movement-btn" data-cmd="right" aria-label="Right">▶<span>Right</span></button>
           </div>
           <button class="movement-btn" data-cmd="backward" aria-label="Backward">▼<span>Backward</span></button>
@@ -95,8 +95,12 @@
           <span>Turn Left / Turn Right</span>
         </div>
         <div class="shortcut-item">
+          <kbd>Z</kbd>
+          <span>Toggle Movement / Twist Body Mode</span>
+        </div>
+        <div class="shortcut-item">
           <kbd>X</kbd>
-          <span>Switch Movement / Twist Body Mode</span>
+          <span>Stop All Movement</span>
         </div>
         <div class="shortcut-item">
           <kbd>H</kbd>
@@ -113,10 +117,6 @@
         <div class="shortcut-item">
           <kbd>G</kbd>
           <span>Go to All Graphs Page</span>
-        </div>
-        <div class="shortcut-item">
-          <kbd>ESC</kbd>
-          <span>Exit Fullscreen</span>
         </div>
       </div>
     </div>

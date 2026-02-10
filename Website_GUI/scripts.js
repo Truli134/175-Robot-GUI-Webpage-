@@ -362,8 +362,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const activeKeys = new Set();
   let isInTwistMode = false;
 
+  // Stop command function
+  const stopCommand = async () => {
+    console.log('Stop command executed');
+    try {
+      await fetch('http://localhost:3000/api/stop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command: 'stop' })
+      });
+    } catch (err) {
+      console.warn('Error sending stop command:', err);
+    }
+  };
+
   // Mode switching
-  const switchModeBtn = document.getElementById('switchModeBtn');
+  const stopBtn = document.getElementById('stopBtn');
   const switchModeBackBtn = document.getElementById('switchModeBackBtn');
   const movementControls = document.getElementById('movementControls');
   const twistBodyControl = document.getElementById('twistBodyControl');
@@ -385,9 +399,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  if (switchModeBtn) {
-    switchModeBtn.addEventListener('click', () => {
-      switchMode(true);
+  if (stopBtn) {
+    stopBtn.addEventListener('click', () => {
+      stopBtn.classList.add('pressed');
+      setTimeout(() => stopBtn.classList.remove('pressed'), 180);
+      stopCommand();
     });
   }
 
@@ -582,8 +598,20 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Check for mode switch key (X)
+    // Check for stop command key (X)
     if (k === 'x') {
+      e.preventDefault && e.preventDefault();
+      const stopBtn = document.getElementById('stopBtn');
+      if (stopBtn) {
+        stopBtn.classList.add('pressed');
+        setTimeout(() => stopBtn.classList.remove('pressed'), 180);
+      }
+      stopCommand();
+      return;
+    }
+
+    // Check for mode toggle key (Z)
+    if (k === 'z') {
       e.preventDefault && e.preventDefault();
       switchMode(!isInTwistMode);
       return;
